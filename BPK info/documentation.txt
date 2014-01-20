@@ -1,0 +1,6 @@
+// A BPK file is just a ZIP file, though it will have a unique file structure:
+
+LEVEL.BPK
+/ = zip root
+/assets //will hold all custom files (LUA, OGG,..)
+/info.meta //holds information about the bpk (name, author, original source etc)
