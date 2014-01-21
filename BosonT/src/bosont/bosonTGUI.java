@@ -10,6 +10,10 @@ import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
+import java.io.IOException;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 
 /**
@@ -18,7 +22,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class bosonTGUI extends javax.swing.JFrame {
 public static String drive;
+public static String selectedFileString;
 private final static String newline = "\n";
+public static String path;
     /**
      * Creates new form bosonTGUI
      */
@@ -43,6 +49,7 @@ private final static String newline = "\n";
         bpkButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jText = new javax.swing.JTextArea();
+        bpkZipButton = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -74,6 +81,16 @@ private final static String newline = "\n";
         jText.setEnabled(false);
         jScrollPane1.setViewportView(jText);
 
+        bpkZipButton.setText("Select ZIP");
+        bpkZipButton.setActionCommand("SelectZip");
+        bpkZipButton.setEnabled(false);
+        bpkZipButton.setName("bpkButton"); // NOI18N
+        bpkZipButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bpkZipButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -88,7 +105,9 @@ private final static String newline = "\n";
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bpkButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(bpkButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(bpkZipButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -100,7 +119,10 @@ private final static String newline = "\n";
                     .addComponent(jBrowseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bpkButton)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(bpkZipButton)
+                        .addGap(5, 5, 5)
+                        .addComponent(bpkButton))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
@@ -136,7 +158,20 @@ private final static String newline = "\n";
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+public static void unzip(){
+    String source = selectedFileString;
+    String destination = path + "\temp";
+    String password = "password";
 
+    try {
+         ZipFile zipFile = new ZipFile(source);
+         if (zipFile.isEncrypted()) {
+            zipFile.setPassword(password);
+         }
+         zipFile.extractAll(destination);
+    } catch (ZipException e) {
+    }
+}
     private void jBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBrowseButtonActionPerformed
 JFileChooser chooser = new JFileChooser();
 FileFilter filter = new FileNameExtensionFilter("APK File", new String[] {"apk"});
@@ -155,6 +190,7 @@ chooser.addChoosableFileFilter(filter);
       drive = selectedFile.getAbsolutePath();
       bpkButton.setEnabled(true);
       jText.setEnabled(true);
+      bpkZipButton.setEnabled(true);
       }
     
     else {
@@ -181,10 +217,34 @@ for(File file: files)
       }                                  
     }//GEN-LAST:event_bpkButtonActionPerformed
 
+    private void bpkZipButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bpkZipButtonActionPerformed
+      JFileChooser chooser = new JFileChooser();
+FileFilter filter = new FileNameExtensionFilter("ZIP File", new String[] {"zip"});
+chooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+chooser.setDialogTitle("Select ZIP");
+chooser.setFileSelectionMode(JFileChooser.OPEN_DIALOG);
+chooser.setFileFilter(filter);
+chooser.addChoosableFileFilter(filter);
+//   
+    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
+     
+      System.out.println("getSelectedFile() : " 
+         +  chooser.getSelectedFile());
+      File selectedFile = chooser.getSelectedFile();
+      selectedFileString = selectedFile.getAbsolutePath();
+    
+     
+    }
+    else {
+      System.out.println("No Selection ");
+      }                                  
+            
+    }//GEN-LAST:event_bpkZipButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
-     public static void main(String args[]) {
+     public static void main(String args[]) throws IOException {
         
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -204,9 +264,13 @@ for(File file: files)
                 
             }
         });
+        path = new File(".").getCanonicalPath();
+        System.out.println(path);
     }
+     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bpkButton;
+    private javax.swing.JButton bpkZipButton;
     private javax.swing.JTextField jBrowseBox;
     private javax.swing.JButton jBrowseButton;
     private javax.swing.JLabel jLabel2;

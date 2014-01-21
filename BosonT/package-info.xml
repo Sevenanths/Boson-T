@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+
+
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<!-- For the id, always use something unique - put your name, a colon, and then the package name. -->
+	<id>BxK:WAPMod</id>
+	<!-- Below should be the name of this package. -->
+	<name>WAP Mod By BxK</name>
+	<!-- The version of this modification.  Keep it numeric so PHP can tell that old < new. -->
+	<version>1.0</version>
+
+	<!-- Type, one of: modification, avatar, language. -->
+	<type>modification</type>
+
+	<!-- Installation, the key part of this file. -->
+	<install for="2.0 RC1, 2.0RC1-1">
+	<readme type="file" parsebbc="true">readme.txt</readme>
+		<require-dir name="wap" destination="$imagesdir" />
+		<require-file name="Wireless.template.php" destination="$themedir" />
+<require-file name="Wireless.english.php" destination="$languagedir" />
+			</install>
+
+	<!-- Don't forget something to make it uninstallable! -->
+	<uninstall for="2.0 RC1, 2.0 RC1-1">
+		<remove-dir name="wap" destination="$imagesdir" />
+		<remove-file name="Wireless.template.php" destination="$themedir" />
+<remove-file name="Wireless.english-utf8.php" destination="$languagedir" />
+
+		
+	</uninstall>
+</package-info>
