@@ -11,7 +11,13 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -25,6 +31,9 @@ public static String drive;
 public static String selectedFileString;
 private final static String newline = "\n";
 public static String path;
+public static String apkName;
+public static String apkPath;
+public static String path0;
     /**
      * Creates new form bosonTGUI
      */
@@ -50,6 +59,10 @@ public static String path;
         jScrollPane1 = new javax.swing.JScrollPane();
         jText = new javax.swing.JTextArea();
         bpkZipButton = new javax.swing.JButton();
+        jInsertButton = new javax.swing.JButton();
+        jApkField = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jConsole = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -91,21 +104,39 @@ public static String path;
             }
         });
 
+        jInsertButton.setText("Insert");
+        jInsertButton.setEnabled(false);
+        jInsertButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jInsertButtonActionPerformed(evt);
+            }
+        });
+
+        jApkField.setEnabled(false);
+
+        jConsole.setColumns(20);
+        jConsole.setRows(5);
+        jScrollPane2.setViewportView(jConsole);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jBrowseBox, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jBrowseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
+                            .addComponent(jApkField, javax.swing.GroupLayout.Alignment.LEADING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jInsertButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bpkButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(bpkZipButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
@@ -124,7 +155,13 @@ public static String path;
                         .addGap(5, 5, 5)
                         .addComponent(bpkButton))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jInsertButton)
+                    .addComponent(jApkField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jBrowseButton.getAccessibleContext().setAccessibleName("butSelectAPK");
@@ -152,26 +189,55 @@ public static String path;
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 public static void unzip(){
     String source = selectedFileString;
-    String destination = path + "\temp";
+    String destination = path;
     String password = "password";
-
+ 
+    
+    
     try {
          ZipFile zipFile = new ZipFile(source);
          if (zipFile.isEncrypted()) {
             zipFile.setPassword(password);
          }
          zipFile.extractAll(destination);
+         System.out.println("Extraction succesful");
     } catch (ZipException e) {
+        
+         File[] fileList = new File(System.getProperty(path0 + "/temp")).listFiles();
+        for (int i=0;i < fileList.length;i++) {
+           /* jText.append(fileList[i].getName()); */
+        }
+       
+        
     }
 }
+ private static void copyFileUsingStream(File source, File dest) throws IOException {
+        InputStream is = null;
+        OutputStream os = null;
+        try {
+            is = new FileInputStream(source);
+            os = new FileOutputStream(dest);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0) {
+                os.write(buffer, 0, length);
+            }
+        } finally {
+            is.close();
+            os.close();
+        }
+        
+       
+        
+    }
     private void jBrowseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBrowseButtonActionPerformed
 JFileChooser chooser = new JFileChooser();
 FileFilter filter = new FileNameExtensionFilter("APK File", new String[] {"apk"});
@@ -188,7 +254,8 @@ chooser.addChoosableFileFilter(filter);
       File selectedFile = chooser.getSelectedFile();
       jBrowseBox.setText(selectedFile.getAbsolutePath());
       drive = selectedFile.getAbsolutePath();
-      bpkButton.setEnabled(true);
+      apkName = selectedFile.getName();
+     /* bpkButton.setEnabled(true); */
       jText.setEnabled(true);
       bpkZipButton.setEnabled(true);
       }
@@ -198,6 +265,50 @@ chooser.addChoosableFileFilter(filter);
       }                                  
     }//GEN-LAST:event_jBrowseButtonActionPerformed
 
+    public void delete(){
+    // Create a file pointing a folder
+ File f=new File(path);
+
+ // Delete the folder
+ delete(f);
+ }
+    public void delete2(){
+    // Create a file pointing a folder
+ File f=new File(path0 + "/decompiled");
+
+ // Delete the folder
+ delete(f);
+ }
+ public static void delete(File file)
+ {
+
+  // Check if file is directory/folder
+  if(file.isDirectory())
+  {
+  // Get all files in the folder
+  File[] files=file.listFiles();
+
+   for(int i=0;i<files.length;i++)
+   {
+
+   // Delete each file in the folder
+   delete(files[i]);
+
+   }
+
+  // Delete the folder
+  file.delete();
+
+  }
+
+
+  else
+  {
+
+  // Delete the file if it is not a folder
+  file.delete();
+    }
+ }
     private void bpkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bpkButtonActionPerformed
  JFileChooser chooser = new JFileChooser();
 chooser.setMultiSelectionEnabled(true);
@@ -232,7 +343,14 @@ chooser.addChoosableFileFilter(filter);
          +  chooser.getSelectedFile());
       File selectedFile = chooser.getSelectedFile();
       selectedFileString = selectedFile.getAbsolutePath();
-    
+      delete();
+      unzip();
+      
+      
+      
+      jApkField.setEnabled(true);
+      jInsertButton.setEnabled(true);
+      jApkField.setText("patched_" + apkName);
      
     }
     else {
@@ -241,9 +359,95 @@ chooser.addChoosableFileFilter(filter);
             
     }//GEN-LAST:event_bpkZipButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    private void jInsertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jInsertButtonActionPerformed
+      delete2();
+        
+        
+        System.out.println("java -jar apktool.jar " + "d \"" + drive + "\" \"" + path0 + "/decompiled\"");
+        String filePath; //where your jar is located.
+    try {
+        Process proc = Runtime.getRuntime().exec("java -jar apktool.jar " + "d \"" + drive + "\" \"" + path0 + "/decompiled\"");
+          try {
+              proc.waitFor();
+              jConsole.setText("Decompiled apk.");
+              
+              File srcFolderPath = new File(path0 + "/temp");
+              File destFolderPath = new File(path0 + "/decompiled/assets");
+              copyFolder(srcFolderPath, destFolderPath);
+              jConsole.setText(jConsole.getText() + "\nInserted files.");
+              wait(5);
+              Process buildproc = Runtime.getRuntime().exec("java -jar apktool.jar b \"" + path0 + "/decompiled\"");
+              System.out.println("java -jar apktool.jar b \"" + path0 + "/decompiled\"");
+              buildproc.waitFor();
+              wait(5);
+              jConsole.setText(jConsole.getText() + "\nAPK built.");
+              System.out.println("java -jar signapk.jar certificate.pem key.pk8 \"" + path0 + "/decompiled/dist/" + apkName + "\" \"" + path0 + "/" + jApkField.getText() + "\"");
+              Process signproc = Runtime.getRuntime().exec("java -jar signapk.jar certificate.pem key.pk8 \"" + path0 + "/decompiled/dist/" + apkName + "\" \"" + path0 + "/" + jApkField.getText() + "\"");
+              signproc.waitFor();
+              wait(5);
+              jConsole.setText(jConsole.getText() + "\nAPK signed");
+          } catch (InterruptedException ex) {
+              Logger.getLogger(bosonTGUI.class.getName()).log(Level.SEVERE, null, ex);
+          }
+          
+    } catch (IOException ex) {
+        Logger.getLogger(bosonTGUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    }//GEN-LAST:event_jInsertButtonActionPerformed
+    public static void wait (int n){
+     long t0,t1;
+    t0=System.currentTimeMillis();
+     do{
+     t1=System.currentTimeMillis();
+     }
+    while (t1-t0<1000);
+     }
+   public static void copyFolder(File srcFolderPath, File destFolderPath)
+			throws IOException {
+
+		if (!srcFolderPath.isDirectory()) {
+
+			// If it is a File the Just copy It to the new Folder
+			InputStream in = new FileInputStream(srcFolderPath);
+			OutputStream out = new FileOutputStream(destFolderPath);
+
+			byte[] buffer = new byte[1024];
+
+			int length;
+
+			while ((length = in.read(buffer)) > 0) {
+				out.write(buffer, 0, length);
+			}
+
+			in.close();
+			out.close();
+			System.out.println("File copied from " + srcFolderPath + " to "
+					+ destFolderPath + " successfully");
+
+		} else {
+
+			// if it is a directory create the directory inside the new destination directory and
+			// list the contents...
+			
+			if (!destFolderPath.exists()) {
+				destFolderPath.mkdir();
+				System.out.println("Directory copied from " + srcFolderPath
+						+ "  to " + destFolderPath + " successfully");
+			}
+
+			String folder_contents[] = srcFolderPath.list();
+
+			for (String file : folder_contents) {
+
+				File srcFile = new File(srcFolderPath, file);
+				File destFile = new File(destFolderPath, file);
+
+				copyFolder(srcFile, destFile);
+			}
+
+		}
+	}
+    
      public static void main(String args[]) throws IOException {
         
         /* Set the Nimbus look and feel */
@@ -264,18 +468,24 @@ chooser.addChoosableFileFilter(filter);
                 
             }
         });
-        path = new File(".").getCanonicalPath();
+        path = new File(".").getCanonicalPath() + "/temp";
+        path0 = new File(".").getCanonicalPath();
         System.out.println(path);
+        System.out.println(path0 + "/decompiled");
     }
      
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bpkButton;
     private javax.swing.JButton bpkZipButton;
+    private javax.swing.JTextField jApkField;
     private javax.swing.JTextField jBrowseBox;
     private javax.swing.JButton jBrowseButton;
+    private javax.swing.JTextArea jConsole;
+    private javax.swing.JButton jInsertButton;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jText;
     // End of variables declaration//GEN-END:variables
 }
