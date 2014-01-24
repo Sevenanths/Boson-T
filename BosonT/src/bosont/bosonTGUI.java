@@ -64,8 +64,10 @@ public static String path0;
         jScrollPane2 = new javax.swing.JScrollPane();
         jConsole = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
+        jAboutLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setName("Boson-T"); // NOI18N
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -169,28 +171,36 @@ public static String path0;
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/bosont/title_boson_x_05x.png"))); // NOI18N
 
+        jAboutLabel.setForeground(new java.awt.Color(153, 153, 153));
+        jAboutLabel.setText("Made by Anthe - boson-m.airdev.nl - Source code available");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jAboutLabel)
+                .addGap(28, 28, 28))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(jLabel2)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addGap(2, 2, 2)
+                .addComponent(jAboutLabel)
+                .addGap(2, 2, 2))
         );
 
         pack();
@@ -213,7 +223,7 @@ public static void unzip(){
         
          File[] fileList = new File(System.getProperty(path0 + "/temp")).listFiles();
         for (int i=0;i < fileList.length;i++) {
-           /* jText.append(fileList[i].getName()); */
+       /*    jText.append(fileList[i].getName()); */
         }
        
         
@@ -343,6 +353,7 @@ chooser.addChoosableFileFilter(filter);
          +  chooser.getSelectedFile());
       File selectedFile = chooser.getSelectedFile();
       selectedFileString = selectedFile.getAbsolutePath();
+      jText.setText(selectedFileString);
       delete();
       unzip();
       
@@ -375,17 +386,21 @@ chooser.addChoosableFileFilter(filter);
               File destFolderPath = new File(path0 + "/decompiled/assets");
               copyFolder(srcFolderPath, destFolderPath);
               jConsole.setText(jConsole.getText() + "\nInserted files.");
-              wait(5);
+          /*    wait(5); */
               Process buildproc = Runtime.getRuntime().exec("java -jar apktool.jar b \"" + path0 + "/decompiled\"");
               System.out.println("java -jar apktool.jar b \"" + path0 + "/decompiled\"");
               buildproc.waitFor();
-              wait(5);
+           /*   wait(5); */
               jConsole.setText(jConsole.getText() + "\nAPK built.");
               System.out.println("java -jar signapk.jar certificate.pem key.pk8 \"" + path0 + "/decompiled/dist/" + apkName + "\" \"" + path0 + "/" + jApkField.getText() + "\"");
               Process signproc = Runtime.getRuntime().exec("java -jar signapk.jar certificate.pem key.pk8 \"" + path0 + "/decompiled/dist/" + apkName + "\" \"" + path0 + "/" + jApkField.getText() + "\"");
               signproc.waitFor();
-              wait(5);
+        /*      wait(5); */
               jConsole.setText(jConsole.getText() + "\nAPK signed");
+              delete();
+              delete2();
+              jConsole.setText(jConsole.getText() + "\nCleaned up.");
+              jConsole.setText(jConsole.getText() + "\nAll done.");
           } catch (InterruptedException ex) {
               Logger.getLogger(bosonTGUI.class.getName()).log(Level.SEVERE, null, ex);
           }
@@ -477,6 +492,7 @@ chooser.addChoosableFileFilter(filter);
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bpkButton;
     private javax.swing.JButton bpkZipButton;
+    private javax.swing.JLabel jAboutLabel;
     private javax.swing.JTextField jApkField;
     private javax.swing.JTextField jBrowseBox;
     private javax.swing.JButton jBrowseButton;
